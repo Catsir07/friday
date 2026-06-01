@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FRIDAY — Your AI. Your Legend.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c9a96e;
+      --gold-light: #e8c98a;
+      --gold-dim: #7a6040;
+      --blue: #4fc3f7;
+      --blue-glow: #00b4ff;
+      --blue-dim: #1a4a6a;
+      --bg: #050709;
+      --bg2: #090d12;
+      --bg3: #0d1117;
+      --surface: #0f1520;
+      --surface2: #161e2e;
+      --border: rgba(201,169,110,0.15);
+      --border-blue: rgba(79,195,247,0.2);
+      --text: #e8eaf0;
+      --text-dim: #7a8599;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 300;
+      overflow: hidden;
+    }
+
+    /* ── Animated background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,180,255,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(201,169,110,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse 40% 30% at 20% 70%, rgba(0,100,200,0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grid lines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,195,247,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,195,247,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout ── */
+    .app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .logo-text {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold), #a07840);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-tagline {
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .new-chat-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, rgba(201,169,110,0.12), rgba(201,169,110,0.06));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--gold-light);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+
+    .new-chat-btn:hover {
+      background: linear-gradient(135deg, rgba(201,169,110,0.22), rgba(201,169,110,0.1));
+      border-color: rgba(201,169,110,0.4);
+      box-shadow: 0 0 20px rgba(201,169,110,0.1);
+    }
+
+    .new-chat-btn svg { flex-shrink: 0; }
+
+    .sidebar-section {
+      padding: 16px 20px 8px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 12px;
+    }
+
+    .history-list::-webkit-scrollbar { width: 3px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .history-item {
+      padding: 10px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size: 13px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+    .history-item.active { background: rgba(79,195,247,0.07); color: var(--blue); }
+
+    .history-item svg { flex-shrink: 0; opacity: 0.5; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .api-key-area {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+    }
+
+    .api-key-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .api-key-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border-blue);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .api-key-input:focus { border-color: var(--blue); }
+    .api-key-input::placeholder { color: var(--text-dim); }
+
+    .api-save-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 7px;
+      background: linear-gradient(135deg, rgba(79,195,247,0.15), rgba(79,195,247,0.07));
+      border: 1px solid var(--border-blue);
+      border-radius: 8px;
+      color: var(--blue);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .api-save-btn:hover {
+      background: linear-gradient(135deg, rgba(79,195,247,0.25), rgba(79,195,247,0.12));
+      box-shadow: 0 0 15px rgba(79,195,247,0.15);
+    }
+
+    .api-status {
+      font-size: 10px;
+      margin-top: 6px;
+      text-align: center;
+      font-family: 'Share Tech Mono', monospace;
+      height: 14px;
+    }
+    .api-status.ok { color: #4ade80; }
+    .api-status.err { color: #f87171; }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(9,13,18,0.8);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .model-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(79,195,247,0.08);
+      border: 1px solid var(--border-blue);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--blue);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .model-badge:hover { background: rgba(79,195,247,0.14); }
+
+    .model-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue-glow);
+      box-shadow: 0 0 8px var(--blue-glow);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .model-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px;
+      min-width: 200px;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+
+    .model-badge.open .model-dropdown { display: block; }
+
+    .model-option {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+    }
+
+    .model-option:hover { background: rgba(255,255,255,0.06); }
+    .model-option.selected { color: var(--blue); }
+    .model-option .tag {
+      font-size: 9px;
+      padding: 2px 6px;
+      background: rgba(79,195,247,0.1);
+      border-radius: 4px;
+      color: var(--blue);
+      letter-spacing: 1px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border);
+      color: var(--text);
+    }
+
+    /* ── Messages ── */
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 0;
+      scroll-behavior: smooth;
+    }
+
+    .messages-area::-webkit-scrollbar { width: 4px; }
+    .messages-area::-webkit-scrollbar-track { background: transparent; }
+    .messages-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+    /* ── Welcome screen ── */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 40px 20px;
+      text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .welcome-logo {
+      width: 80px; height: 80px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 20px rgba(201,169,110,0.3));
+      animation: logoFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes logoFloat {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .welcome h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold), #8a6030);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .welcome-sub {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 6px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .welcome-desc {
+      font-size: 14px;
+      color: var(--text-dim);
+      max-width: 420px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .suggestions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    .suggestion-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .suggestion-card:hover {
+      border-color: rgba(201,169,110,0.35);
+      background: var(--surface2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+
+    .suggestion-card .s-icon {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .suggestion-card .s-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+
+    .suggestion-card .s-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    /* ── Message bubbles ── */
+    .message-wrap {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 28px;
+      animation: msgIn 0.3s ease both;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .message.user { flex-direction: row-reverse; }
+
+    .avatar {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+    }
+
+    .avatar.friday {
+      background: linear-gradient(135deg, rgba(201,169,110,0.2), rgba(201,169,110,0.05));
+      border: 1px solid rgba(201,169,110,0.3);
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .avatar.user {
+      background: linear-gradient(135deg, rgba(79,195,247,0.2), rgba(79,195,247,0.05));
+      border: 1px solid var(--border-blue);
+      color: var(--blue);
+      font-size: 11px;
+    }
+
+    .bubble {
+      max-width: 72%;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .message.friday .bubble {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top-left-radius: 4px;
+      color: var(--text);
+    }
+
+    .message.user .bubble {
+      background: linear-gradient(135deg, rgba(79,195,247,0.14), rgba(79,195,247,0.07));
+      border: 1px solid var(--border-blue);
+      border-top-right-radius: 4px;
+      color: var(--text);
+    }
+
+    .bubble p { margin-bottom: 10px; }
+    .bubble p:last-child { margin-bottom: 0; }
+
+    .bubble code {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      background: rgba(0,0,0,0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--blue);
+    }
+
+    .bubble pre {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(79,195,247,0.15);
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: #a8d8ea;
+      line-height: 1.6;
+    }
+
+    .bubble pre code {
+      background: none;
+      padding: 0;
+      color: inherit;
+    }
+
+    .bubble strong { color: var(--gold-light); font-weight: 600; }
+    .bubble em { color: var(--blue); font-style: normal; }
+
+    .bubble ul, .bubble ol {
+      padding-left: 20px;
+      margin: 8px 0;
+    }
+
+    .bubble li { margin-bottom: 4px; }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      border-top-left-radius: 4px;
+      width: fit-content;
+    }
+
+    .typing-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: typingAnim 1.2s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; background: var(--gold-dim); }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; background: var(--blue-dim); }
+
+    @keyframes typingAnim {
+      0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* ── Input area ── */
+    .input-area {
+      padding: 16px 28px 20px;
+      background: linear-gradient(to top, var(--bg2) 70%, transparent);
+      flex-shrink: 0;
+    }
+
+    .input-container {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 4px 4px 4px 18px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box:focus-within {
+      border-color: rgba(201,169,110,0.4);
+      box-shadow: 0 0 0 3px rgba(201,169,110,0.07), 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .input-box textarea {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.6;
+      resize: none;
+      max-height: 180px;
+      padding: 10px 0;
+      min-height: 44px;
+    }
+
+    .input-box textarea::placeholder { color: var(--text-dim); }
+
+    .send-btn {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--gold), #a07840);
+      color: #000;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      align-self: flex-end;
+      margin-bottom: 2px;
+    }
+
+    .send-btn:hover {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      box-shadow: 0 4px 20px rgba(201,169,110,0.4);
+      transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .input-footer span {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    /* ── Toast notification ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      z-index: 999;
+      animation: toastIn 0.3s ease;
+      display: none;
+    }
+
+    .toast.show { display: block; }
+    .toast.success {
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.3);
+      color: #4ade80;
+    }
+    .toast.error {
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: #f87171;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Mobile sidebar toggle ── */
+    .sidebar-toggle {
+      display: none;
+      width: 34px; height: 34px;
+      align-items: center; justify-content: center;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0; bottom: 0;
+        z-index: 200;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.open { left: 0; }
+      .sidebar-toggle { display: flex; }
+
+      .suggestions { grid-template-columns: 1fr; }
+
+      .bubble { max-width: 88%; }
+
+      .welcome h1 { font-size: 30px; }
+    }
+
+    /* ── Scrollbar ── */
+    * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-area">
+        <!-- Inline F logo matching the uploaded logo -->
+        <div class="logo-icon">
+          <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="21" cy="21" r="20" stroke="url(#ringGrad)" stroke-width="1.5" stroke-dasharray="100 30"/>
+            <circle cx="21" cy="21" r="14" stroke="url(#ringGrad2)" stroke-width="1" opacity="0.5"/>
+            <circle cx="21" cy="21" r="9" stroke="url(#blueGrad)" stroke-width="0.8" opacity="0.4"/>
+            <text x="21" y="26" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="14" fill="url(#goldGrad)">F</text>
+            <defs>
+              <linearGradient id="ringGrad" x1="0" y1="0" x2="42" y2="42">
+                <stop offset="0%" stop-color="#c9a96e"/>
+                <stop offset="100%" stop-color="#7a6040"/>
+              </linearGradient>
+              <linearGradient id="ringGrad2" x1="0" y1="0" x2="42" y2="42">
+                <stop offset="0%" stop-color="#4fc3f7"/>
+                <stop offset="100%" stop-color="#1a4a6a"/>
+              </linearGradient>
+              <linearGradient id="blueGrad" x1="0" y1="0" x2="42" y2="42">
+                <stop offset="0%" stop-color="#4fc3f7"/>
+                <stop offset="100%" stop-color="#c9a96e"/>
+              </linearGradient>
+              <linearGradient id="goldGrad" x1="10" y1="10" x2="30" y2="30">
+                <stop offset="0%" stop-color="#e8c98a"/>
+                <stop offset="100%" stop-color="#c9a96e"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-text">FRIDAY</div>
+          <div class="logo-tagline">Your AI. Your Legend.</div>
+        </div>
+      </div>
+
+      <button class="new-chat-btn" onclick="newChat()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Chat
+      </button>
+    </div>
+
+    <div class="sidebar-section">Recent</div>
+    <div class="history-list" id="historyList">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="api-key-area">
+        <div class="api-key-label">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          API KEY
+        </div>
+        <input type="password" class="api-key-input" id="apiKeyInput"
+          placeholder="sk-ant-api03-..." autocomplete="off"/>
+        <button class="api-save-btn" onclick="saveApiKey()">Save Key</button>
+        <div class="api-status" id="apiStatus"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+
+        <div class="model-badge" id="modelBadge" onclick="toggleModelDropdown()">
+          <div class="dot"></div>
+          <span id="modelLabel">Claude Sonnet 4</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+          <div class="model-dropdown" id="modelDropdown">
+            <div class="model-option selected" onclick="selectModel('claude-sonnet-4-20250514','Claude Sonnet 4')">
+              Claude Sonnet 4 <span class="tag">FAST</span>
+            </div>
+            <div class="model-option" onclick="selectModel('claude-opus-4-5','Claude Opus 4.5')">
+              Claude Opus 4.5 <span class="tag">SMART</span>
+            </div>
+            <div class="model-option" onclick="selectModel('claude-haiku-4-5-20251001','Claude Haiku 4.5')">
+              Claude Haiku 4.5 <span class="tag">LITE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" title="Clear chat" onclick="clearChat()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </button>
+        <button class="icon-btn" title="Export chat" onclick="exportChat()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages-area" id="messagesArea">
+      <!-- Welcome screen shown initially -->
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="input-container">
+        <div class="input-box">
+          <textarea id="userInput" placeholder="Ask FRIDAY anything…" rows="1"
+            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="input-footer">
+          <span>INTELLIGENCE · INNOVATION · INFINITE POSSIBILITIES</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── State ──
+  let conversations = JSON.parse(localStorage.getItem('friday_convos') || '{}');
+  let currentId = null;
+  let selectedModel = 'claude-sonnet-4-20250514';
+  let apiKey = localStorage.getItem('friday_api_key') || '';
+  let isStreaming = false;
+
+  // ── Init ──
+  window.onload = () => {
+    if (apiKey) {
+      document.getElementById('apiKeyInput').value = apiKey;
+      setApiStatus('KEY LOADED', 'ok');
+    }
+    renderHistory();
+    showWelcome();
+  };
+
+  // ── API Key ──
+  function saveApiKey() {
+    const val = document.getElementById('apiKeyInput').value.trim();
+    if (!val.startsWith('sk-ant-')) {
+      setApiStatus('INVALID KEY FORMAT', 'err');
+      return;
+    }
+    apiKey = val;
+    localStorage.setItem('friday_api_key', apiKey);
+    setApiStatus('KEY SAVED ✓', 'ok');
+    showToast('API key saved successfully', 'success');
+  }
+
+  function setApiStatus(msg, type) {
+    const el = document.getElementById('apiStatus');
+    el.textContent = msg;
+    el.className = 'api-status ' + type;
+  }
+
+  // ── Model ──
+  function toggleModelDropdown() {
+    document.getElementById('modelBadge').classList.toggle('open');
+  }
+
+  function selectModel(id, label) {
+    selectedModel = id;
+    document.getElementById('modelLabel').textContent = label;
+    document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+    event.target.closest('.model-option').classList.add('selected');
+    document.getElementById('modelBadge').classList.remove('open');
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.model-badge')) {
+      document.getElementById('modelBadge').classList.remove('open');
+    }
+  });
+
+  // ── Welcome screen ──
+  function showWelcome() {
+    const area = document.getElementById('messagesArea');
+    area.innerHTML = `
+      <div class="welcome">
+        <svg class="welcome-logo" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" stroke="url(#wg1)" stroke-width="2" stroke-dasharray="180 60"/>
+          <circle cx="40" cy="40" r="27" stroke="url(#wg2)" stroke-width="1.5" opacity="0.6"/>
+          <circle cx="40" cy="40" r="16" stroke="url(#wg3)" stroke-width="1" opacity="0.4"/>
+          <text x="40" y="48" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="24" fill="url(#wg4)">F</text>
+          <circle cx="40" cy="2" r="3" fill="#4fc3f7" opacity="0.8"/>
+          <circle cx="40" cy="78" r="2" fill="#c9a96e" opacity="0.6"/>
+          <defs>
+            <linearGradient id="wg1" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#c9a96e"/><stop offset="1" stop-color="#4fc3f7"/></linearGradient>
+            <linearGradient id="wg2" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#e8c98a"/><stop offset="1" stop-color="#c9a96e"/></linearGradient>
+            <linearGradient id="wg3" x1="0" y1="0" x2="80" y2="80"><stop stop-color="#4fc3f7"/><stop offset="1" stop-color="#1a4a6a"/></linearGradient>
+            <linearGradient id="wg4" x1="20" y1="20" x2="60" y2="60"><stop stop-color="#e8c98a"/><stop offset="1" stop-color="#c9a96e"/></linearGradient>
+          </defs>
+        </svg>
+        <h1>FRIDAY</h1>
+        <div class="welcome-sub">Your AI. Your Legend.</div>
+        <p class="welcome-desc">Intelligence. Innovation. Infinite Possibilities.<br>What can I help you with today?</p>
+        <div class="suggestions">
+          <div class="suggestion-card" onclick="prefill('Explain quantum computing in simple terms')">
+            <div class="s-icon">⚡</div>
+            <div class="s-title">Explain a concept</div>
+            <div class="s-desc">Make complex topics easy to understand</div>
+          </div>
+          <div class="suggestion-card" onclick="prefill('Write a Python function to scrape a website')">
+            <div class="s-icon">💻</div>
+            <div class="s-title">Write some code</div>
+            <div class="s-desc">Scripts, functions, full apps</div>
+          </div>
+          <div class="suggestion-card" onclick="prefill('Help me brainstorm startup ideas in AI space')">
+            <div class="s-icon">🚀</div>
+            <div class="s-title">Brainstorm ideas</div>
+            <div class="s-desc">Creative thinking and ideation</div>
+          </div>
+          <div class="suggestion-card" onclick="prefill('Draft a professional email to my client')">
+            <div class="s-icon">✍️</div>
+            <div class="s-title">Write & edit</div>
+            <div class="s-desc">Emails, essays, content</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function prefill(text) {
+    const ta = document.getElementById('userInput');
+    ta.value = text;
+    autoResize(ta);
+    ta.focus();
+  }
+
+  // ── Send message ──
+  async function sendMessage() {
+    const ta = document.getElementById('userInput');
+    const text = ta.value.trim();
+    if (!text || isStreaming) return;
+
+    if (!apiKey) {
+      showToast('Please enter your Anthropic API key first', 'error');
+      return;
+    }
+
+    // Start new convo if needed
+    if (!currentId) {
+      currentId = 'chat_' + Date.now();
+      conversations[currentId] = { title: text.slice(0,40), messages: [] };
+      saveConvos();
+      renderHistory();
+    }
+
+    const convo = conversations[currentId];
+    convo.messages.push({ role: 'user', content: text });
+    saveConvos();
+
+    ta.value = '';
+    autoResize(ta);
+    renderMessages();
+
+    // Show typing indicator
+    appendTypingIndicator();
+
+    isStreaming = true;
+    document.getElementById('sendBtn').disabled = true;
+
+    try {
+      // Try the /api/chat serverless route first, fall back to direct API
+      let response;
+      const body = {
+        model: selectedModel,
+        max_tokens: 2048,
+        system: "You are FRIDAY, an advanced AI assistant. Your name stands for your identity — intelligent, precise, and helpful. Respond in a clear, direct, and helpful manner. You excel at coding, analysis, writing, and reasoning.",
+        messages: convo.messages
+      };
+
+      // Try Vercel API route first
+      try {
+        response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...body, apiKey })
+        });
+
+        if (!response.ok && response.status === 404) throw new Error('no_route');
+      } catch(e) {
+        if (e.message === 'no_route' || e.message === 'Failed to fetch') {
+          // Direct API call (for local / GitHub Pages testing)
+          response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify(body)
+          });
+        } else {
+          throw e;
+        }
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error.message || 'API error');
+      }
+
+      const assistantText = data.content?.[0]?.text || 'No response received.';
+
+      removeTypingIndicator();
+      convo.messages.push({ role: 'assistant', content: assistantText });
+      saveConvos();
+      renderMessages();
+
+    } catch (err) {
+      removeTypingIndicator();
+      const errMsg = err.message.includes('401') ? 'Invalid API key. Please check your key.' :
+                     err.message.includes('429') ? 'Rate limit reached. Please wait and try again.' :
+                     'Something went wrong: ' + err.message;
+      showToast(errMsg, 'error');
+      // Remove last user message from history on failure
+      convo.messages.pop();
+      saveConvos();
+    }
+
+    isStreaming = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('userInput').focus();
+  }
+
+  // ── Render ──
+  function renderMessages() {
+    if (!currentId) return;
+    const area = document.getElementById('messagesArea');
+    const msgs = conversations[currentId].messages;
+
+    area.innerHTML = msgs.map((m, i) => `
+      <div class="message-wrap">
+        <div class="message ${m.role === 'user' ? 'user' : 'friday'}">
+          <div class="avatar ${m.role === 'user' ? 'user' : 'friday'}">${m.role === 'user' ? 'YOU' : 'F'}</div>
+          <div class="bubble">${formatMessage(m.content)}</div>
+        </div>
+      </div>`).join('');
+
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function formatMessage(text) {
+    // Code blocks
+    text = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+      `<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+    // Inline code
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Bold
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Italic/em
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Headers
+    text = text.replace(/^### (.+)$/gm, '<strong style="font-size:15px;color:var(--gold-light)">$1</strong>');
+    text = text.replace(/^## (.+)$/gm, '<strong style="font-size:16px;color:var(--gold-light)">$1</strong>');
+    text = text.replace(/^# (.+)$/gm, '<strong style="font-size:18px;color:var(--gold-light)">$1</strong>');
+    // Lists
+    text = text.replace(/^[•\-\*] (.+)$/gm, '• $1');
+    // Paragraphs
+    text = text.split('\n\n').map(p => p.trim() ? `<p>${p.replace(/\n/g,'<br>')}</p>` : '').join('');
+    return text || `<p>${escapeHtml(text)}</p>`;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function appendTypingIndicator() {
+    const area = document.getElementById('messagesArea');
+    const wrap = document.createElement('div');
+    wrap.className = 'message-wrap';
+    wrap.id = 'typingWrap';
+    wrap.innerHTML = `
+      <div class="message friday">
+        <div class="avatar friday">F</div>
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>`;
+    area.appendChild(wrap);
+    area.scrollTop = area.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const el = document.getElementById('typingWrap');
+    if (el) el.remove();
+  }
+
+  // ── History ──
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    const ids = Object.keys(conversations).reverse();
+    if (!ids.length) {
+      list.innerHTML = '<div style="padding:10px 10px;font-size:12px;color:var(--text-dim)">No conversations yet</div>';
+      return;
+    }
+    list.innerHTML = ids.map(id => `
+      <div class="history-item ${id === currentId ? 'active' : ''}" onclick="loadConvo('${id}')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        ${escapeHtml(conversations[id].title || 'Chat')}
+      </div>`).join('');
+  }
+
+  function loadConvo(id) {
+    currentId = id;
+    renderHistory();
+    renderMessages();
+  }
+
+  function saveConvos() {
+    try { localStorage.setItem('friday_convos', JSON.stringify(conversations)); } catch(e) {}
+  }
+
+  // ── Controls ──
+  function newChat() {
+    currentId = null;
+    showWelcome();
+    renderHistory();
+    document.getElementById('userInput').focus();
+  }
+
+  function clearChat() {
+    if (!currentId) return;
+    if (confirm('Clear this conversation?')) {
+      delete conversations[currentId];
+      saveConvos();
+      newChat();
+    }
+  }
+
+  function exportChat() {
+    if (!currentId) return;
+    const msgs = conversations[currentId].messages;
+    const text = msgs.map(m => `[${m.role.toUpperCase()}]\n${m.content}`).join('\n\n---\n\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'friday-chat.txt'; a.click();
+  }
+
+  // ── Helpers ──
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 180) + 'px';
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + type;
+    setTimeout(() => { t.className = 'toast'; }, 3500);
+  }
+</script>
+</body>
+</html>
